@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whispers of Fern</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a whimsical look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* A gentle, inviting font for the body text */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* A classic, elegant font for the title */
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Set a beautiful cottagecore background image */
+        .cottagecore-bg {
+            background-image: url('https://images.unsplash.com/photo-1549414313-5a02479e0809?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Simple fade-in animation for a soft entry */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+
+        /* Glassmorphism effect for the content card */
+        .glass-card {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="cottagecore-bg min-h-screen p-4 flex flex-col items-center">
+    
+    <!-- Header with a link back to the collection page -->
+    <header class="w-full max-w-2xl mx-auto p-4 mb-8 text-center animate-fadeIn">
+        <a href="poems.html" class="inline-block glass-card py-2 px-6 rounded-full text-gray-800 hover:text-gray-900 transition duration-300">
+            ← Back to All Poems
+        </a>
+    </header>
+
+    <!-- Main content container for the poem -->
+    <main class="w-full max-w-2xl mx-auto text-center animate-fadeIn">
+        <div class="glass-card p-8 md:p-12 rounded-3xl shadow-lg border border-opacity-30">
+            <h1 class="title-font text-5xl md:text-6xl text-gray-800 mb-4 font-bold">
+                Whispers of Fern
+            </h1>
+            <p class="text-lg md:text-xl text-gray-700 mb-8 italic">
+                A poem about finding peace in the forest's quiet corners.
+            </p>
+
+            <div class="text-base md:text-lg text-gray-700 leading-relaxed text-left max-w-xl mx-auto">
+                <p class="mb-4">
+                    In shades of green, the old world sleeps,<br>
+                    Where sunlight dapples, secrets keeps.<br>
+                    A silent root, a twisting vine,<br>
+                    In ancient patterns, so divine.
+                </p>
+                <p class="mb-4">
+                    The moss-clad stone, a soft embrace,<br>
+                    A whisper from this quiet place.<br>
+                    No hurried steps, no rushing sound,<br>
+                    Just peace upon this hallowed ground.
+                </p>
+                <p>
+                    A fragile whisper, soft and low,<br>
+                    In places where the wild things grow.<br>
+                    The fern unfurls, a gentle hand,<br>
+                    A silent story in the land.
+                </p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
