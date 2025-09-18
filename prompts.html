@@ -47,124 +47,6 @@
 </head>
 <body class="cottagecore-bg min-h-screen p-4 flex flex-col items-center">
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Firebase initialization
-        const __app_id = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const __firebase_config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        const app = initializeApp(__firebase_config);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let userId = 'anonymous';
-
-        const loadingIndicator = document.getElementById('loading');
-        const commentsList = document.getElementById('comments-list');
-        const commentForm = document.getElementById('comment-form');
-        const usernameInput = document.getElementById('username');
-        const commentInput = document.getElementById('comment');
-        const messageBox = document.getElementById('message-box');
-
-        const showMessage = (msg) => {
-            messageBox.textContent = msg;
-            messageBox.classList.remove('hidden');
-            setTimeout(() => {
-                messageBox.classList.add('hidden');
-            }, 3000);
-        };
-
-        const updateUserIdDisplay = () => {
-            const userIdDisplay = document.getElementById('user-id-display');
-            if (userIdDisplay) {
-                userIdDisplay.textContent = `Your User ID: ${userId}`;
-                userIdDisplay.classList.remove('hidden');
-            }
-        };
-
-        // Authentication and Data Listener
-        (async () => {
-            try {
-                if (__initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                const user = auth.currentUser;
-                if (user) {
-                    userId = user.uid;
-                    updateUserIdDisplay();
-                }
-
-                // Check for write access
-                try {
-                    const testDocRef = await addDoc(collection(db, `/artifacts/${__app_id}/public/data/prompts`), {
-                        test: true
-                    });
-                    await deleteDoc(testDocRef);
-                } catch (e) {
-                    console.error("No write access to Firestore, a database issue likely exists.", e);
-                    commentForm.innerHTML = `<p class="text-red-600 text-center">Cannot connect to the database. Please try again later.</p>`;
-                    loadingIndicator.classList.add('hidden');
-                    return;
-                }
-
-                // Real-time listener for comments
-                const q = query(collection(db, `/artifacts/${__app_id}/public/data/prompts`), orderBy("timestamp", "asc"));
-                onSnapshot(q, (snapshot) => {
-                    commentsList.innerHTML = '';
-                    snapshot.docs.forEach(doc => {
-                        const comment = doc.data();
-                        const commentElement = document.createElement('div');
-                        commentElement.classList.add('bg-white', 'bg-opacity-50', 'p-4', 'rounded-lg', 'shadow-md', 'mb-4', 'border', 'border-opacity-30');
-                        commentElement.innerHTML = `
-                            <p class="font-bold text-gray-800">${comment.username || 'Anonymous'}</p>
-                            <p class="text-gray-700 mt-2">${comment.comment}</p>
-                            <p class="text-xs text-gray-500 mt-2">${comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleString() : 'Just now'}</p>
-                        `;
-                        commentsList.appendChild(commentElement);
-                    });
-                    loadingIndicator.classList.add('hidden');
-                });
-            } catch (error) {
-                console.error("Firebase auth error or database connection issue:", error);
-                commentForm.innerHTML = `<p class="text-red-600 text-center">Authentication or database connection failed. Please try again later.</p>`;
-                loadingIndicator.classList.add('hidden');
-            }
-        })();
-
-        // Form submission handler
-        commentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = usernameInput.value || 'Anonymous';
-            const comment = commentInput.value;
-
-            if (comment.trim() === '') {
-                showMessage("Please write a comment before submitting.");
-                return;
-            }
-
-            try {
-                await addDoc(collection(db, `/artifacts/${__app_id}/public/data/prompts`), {
-                    username: username,
-                    comment: comment,
-                    timestamp: serverTimestamp(),
-                    userId: userId
-                });
-                commentInput.value = '';
-            } catch (e) {
-                console.error("Error adding comment: ", e);
-                showMessage("Failed to post comment. Please try again.");
-            }
-        });
-    </script>
-
     <!-- Header with a link back to the homepage -->
     <header class="w-full max-w-4xl mx-auto p-4 mb-8 text-center animate-fadeIn">
         <a href="index.html" class="inline-block glass-card py-2 px-6 rounded-full text-gray-800 hover:text-gray-900 transition duration-300">
@@ -188,31 +70,10 @@
                     Write a poem about an old clock found in an abandoned house. What stories does it hold? What moments has it counted down, and what is its purpose now?
                 </p>
             </div>
-
-            <!-- User ID Display -->
-            <div id="user-id-display" class="hidden text-sm text-center text-gray-500 mb-6"></div>
-
-            <!-- Comment Form -->
-            <div class="mb-8">
-                <h2 class="title-font text-2xl font-bold mb-4">Share Your Poem</h2>
-                <form id="comment-form" class="flex flex-col space-y-4">
-                    <input type="text" id="username" placeholder="Your Name (Optional)" class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 bg-white bg-opacity-70">
-                    <textarea id="comment" placeholder="Write your poem here..." rows="6" class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 bg-white bg-opacity-70"></textarea>
-                    <button type="submit" class="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-full transition duration-300 transform hover:scale-105">
-                        Submit
-                    </button>
-                </form>
-                <div id="message-box" class="hidden mt-4 text-center text-sm font-semibold text-gray-700 p-2 rounded-md bg-yellow-200"></div>
-            </div>
-
-            <!-- Comment Section -->
-            <div>
-                <h2 class="title-font text-2xl font-bold mb-4">Community Creations</h2>
-                <div id="loading" class="text-center text-gray-600">Loading comments...</div>
-                <div id="comments-list">
-                    <!-- Comments will be dynamically added here -->
-                </div>
-            </div>
+            
+            <p class="text-center text-gray-700 text-lg leading-relaxed mt-4">
+                Share your poem on social media with the hashtag <span class="font-bold text-gray-900">#ThePoetsCottage</span> to join the conversation!
+            </p>
         </div>
     </main>
 </body>
